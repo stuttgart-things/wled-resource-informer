@@ -28,7 +28,7 @@ tasks:
 
   build-server:
     desc: Build server
-    deps: [lint, proto]
+    deps: [lint]
     cmds:
       - go mod tidy
       - CGO_ENABLED=0
@@ -39,7 +39,7 @@ tasks:
     desc: Build container image
     deps: [build-server]
     cmds:
-      - nerdctl build --platform=arm64 --output type=image,name={{ .REGISTRY }}/{{ .REPOSITORY_NAME }}/{{ .PROJECT_NAME }}:{{ .MAJOR }}.{{ .MINOR }}.{{ .PATCH }},push=true .
+      - sudo nerdctl build --platform=arm64 --output type=image,name={{ .REGISTRY }}/{{ .REPOSITORY_NAME }}/{{ .PROJECT_NAME }}:{{ .MAJOR }}.{{ .MINOR }}.{{ .PATCH }},push=true .
 
   lint:
     desc: Lint code
