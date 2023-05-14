@@ -1,0 +1,59 @@
+---
+version: "3"
+
+vars:
+  MODULE: github.com/stuttgart-things/wled-resource-informer
+  REGISTRY: eu.gcr.io
+  REPOSITORY_NAME: stuttgart-things
+  PROJECT_NAME:
+    sh: echo ${PWD##*/}
+  DATE:
+    sh: date +"%y.%m%d.%H%M"
+  GIT_COMMIT:
+    sh: git log -n 1 --format=%h
+  MAJOR:
+    sh: git describe --tags --abbrev=0 | cut -d "." -f1
+  MINOR:
+    sh: git describe --tags --abbrev=0 | cut -d "." -f2
+  PATCH:
+    sh: git describe --tags --abbrev=0 | cut -d "." -f3
+  VERSION:
+    sh: old_tag=$(git describe --tags --abbrev=0 | cut -d "." -f3); new_tag=$((old_tag+1)); echo $new_tag
+  UPDATED_TAG:
+    sh: old_tag=$(git describe --tags --abbrev=0 | cut -d "." -f3); new_tag=$((old_tag+1)); echo $new_tag
+  UPDATED_TAG_VERSION:
+    sh: t1=$(git describe --tags --abbrev=0 | cut -f1 -d'.'); t2=$(git describe --tags --abbrev=0 | cut -f2 -d'.'); echo $t1.$t2.{{.UPDATED_TAG}}
+
+tasks:
+  build-server:
+    desc: Build server
+    deps: [lint, proto]
+    cmds:
+      - go mod tidy
+      - CGO_ENABLED=0
+      - GOOS=linux
+      - go install -ldflags="-X main.version=v{{ .MAJOR }}.{{ .MINOR }}.{{ .PATCH }} -X main.date={{ .DATE }} -X main.commit={{ .GIT_COMMIT }}"
+
+  build-image:
+    desc: Build container image
+    deps: [build-server]
+    cmds:
+      - nerdctl build --platform=arm64 --output type=image,name=eu.gcr.io/stuttgart-things/wled-informer:0.5,push=true .
+
+  lint:
+    desc: Lint code
+    cmds:
+      - cmd: golangci-lint run
+        ignore_error: true
+
+  tag:
+    desc: commit, push & tag the module
+    deps: [lint]
+    cmds:
+      - go mod tidy
+      - git pull
+      - git add *
+      - git commit -am 'updated {{ .PROJECT_NAME }} {{ .DATE }} for tag version {{ .UPDATED_TAG_VERSION }}'
+      - git push
+      - git tag -a {{ .UPDATED_TAG_VERSION }} -m 'updated for stuttgart-things {{.DATE}} for tag version {{ .UPDATED_TAG_VERSION }}'
+      - git push origin --tags

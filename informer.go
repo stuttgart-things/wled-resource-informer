@@ -23,6 +23,11 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
+// Buckets represents buckets configuration
+type Segments struct {
+	Segements map[string]string `yaml:"segments,omitempty"`
+}
+
 func main() {
 	kubeConfig := os.Getenv("KUBECONFIG")
 
@@ -65,7 +70,12 @@ func main() {
 				return
 			}
 
-			fmt.Println("ADDED!")
+			nodeName := os.Getenv("NODE_NAME")
+			wledSegment := os.Getenv(nodeName)
+
+			fmt.Println("ADDED POD ON NODE: " + nodeName)
+			fmt.Println("WOULD SEND TO", wledSegment)
+
 			fmt.Println(obj)
 
 			createdUnstructuredObj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(obj)
@@ -89,6 +99,8 @@ func main() {
 			}
 
 			fmt.Println("UPDATED!")
+			fmt.Println("UPDATED POD ON NODE: " + os.Getenv("NODE_NAME"))
+
 			fmt.Println(RandBool)
 			// ControllLights()
 			// Handler logic
@@ -101,6 +113,8 @@ func main() {
 			}
 
 			fmt.Println("DELETED!")
+			fmt.Println("DELETED POD ON NODE: " + os.Getenv("NODE_NAME"))
+
 		},
 	})
 
