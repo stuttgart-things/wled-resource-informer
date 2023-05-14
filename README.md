@@ -1,0 +1,1 @@
+# wled-resource-informer
