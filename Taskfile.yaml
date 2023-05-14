@@ -39,7 +39,7 @@ tasks:
     desc: Build container image
     deps: [build-server]
     cmds:
-      - nerdctl build --platform=arm64 --output type=image,name=eu.gcr.io/stuttgart-things/wled-informer:0.5,push=true .
+      - nerdctl build --platform=arm64 --output type=image,name={{ .REGISTRY }}/{{ .REPOSITORY_NAME }}/{{ .PROJECT_NAME }}:{{ .MAJOR }}.{{ .MINOR }}.{{ .PATCH }},push=true .
 
   lint:
     desc: Lint code
