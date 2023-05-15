@@ -14,6 +14,8 @@ import (
 	"sync"
 	"time"
 
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	wled "github.com/stuttgart-things/wled-resource-informer/wled"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -58,14 +60,14 @@ func main() {
 
 	resource := schema.GroupVersionResource{Group: "", Version: "v1", Resource: "pods"}
 
-	// listOp := metav1.ListOptions{
-	// 	FieldSelector: "spec.nodeName=pve-dev-2",
-	// }
+	listOp := metav1.ListOptions{
+		FieldSelector: "spec.nodeName=" + nodeName + "\"",
+	}
 
-	// listOpfunc := dynamicinformer.TweakListOptionsFunc(func(options *metav1.ListOptions) { *options = listOp })
-	// factory := dynamicinformer.NewFilteredDynamicSharedInformerFactory(clusterClient, time.Minute, corev1.NamespaceAll, listOpfunc)
+	listOpfunc := dynamicinformer.TweakListOptionsFunc(func(options *metav1.ListOptions) { *options = listOp })
+	factory := dynamicinformer.NewFilteredDynamicSharedInformerFactory(clusterClient, time.Minute, corev1.NamespaceAll, listOpfunc)
 
-	factory := dynamicinformer.NewFilteredDynamicSharedInformerFactory(clusterClient, time.Minute, corev1.NamespaceAll, nil)
+	// factory := dynamicinformer.NewFilteredDynamicSharedInformerFactory(clusterClient, time.Minute, corev1.NamespaceAll, nil)
 
 	if informerNamespace != "" {
 		factory = dynamicinformer.NewFilteredDynamicSharedInformerFactory(clusterClient, time.Minute, informerNamespace, nil)
@@ -77,6 +79,9 @@ func main() {
 	synced := false
 
 	// START INFORMING
+
+	fmt.Println("INFORMING ON: " + nodeName)
+	fmt.Println("spec.nodeName=" + nodeName + "\"")
 
 	informer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
@@ -121,8 +126,8 @@ func main() {
 				return
 			}
 
-			fmt.Println("UPDATED!")
-			fmt.Println("UPDATED POD ON NODE: " + os.Getenv("NODE_NAME"))
+			// fmt.Println("UPDATED!")
+			// fmt.Println("UPDATED POD ON NODE: " + os.Getenv("NODE_NAME"))
 
 			// ControllWled()
 			// Handler logic
