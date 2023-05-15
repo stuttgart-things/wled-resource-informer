@@ -94,8 +94,6 @@ func main() {
 			fmt.Println("LED SEGMENT", wledSegment)
 			fmt.Println("NAMESPACE", informerNamespace)
 
-			// fmt.Println(obj)
-
 			// CONVERT OBJECT TO POD
 			createdUnstructuredObj, _ := runtime.DefaultUnstructuredConverter.ToUnstructured(obj)
 
