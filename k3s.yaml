@@ -18,13 +18,19 @@ metadata:
 data:
   wledurl: "192.168.8.100"
   namespace: croco
+  brightness: "100"
   node11: "0"
-  node13: "1"
-  node14: "2"
-  node21: "3"
-  node22: "4"
-  node23: "5"
-  node24: "6"
+  node12: "1"
+  node13: "2"
+  node14: "3"
+  node21: "4"
+  node22: "5"
+  node23: "6"
+  node24: "7"
+  node31: "8"
+  node32: "9"
+  node33: "10"
+  node34: "11"
 ---
 apiVersion: apps/v1
 kind: DaemonSet
@@ -54,7 +60,7 @@ spec:
       serviceAccountName: wled-resource-informer
       containers:
       - name: wled-resource-informer
-        image: eu.gcr.io/stuttgart-things/wled-resource-informer:0.1.7
+        image: eu.gcr.io/stuttgart-things/wled-resource-informer:0.1.8
         envFrom:
           - configMapRef:
               name: node-segement-config
