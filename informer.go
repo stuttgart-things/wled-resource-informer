@@ -25,9 +25,10 @@ import (
 )
 
 var (
-	nodeName    = os.Getenv("NODE_NAME")
-	wledSegment = os.Getenv(nodeName)
-	wledUrl     = os.Getenv("WLED_URL")
+	nodeName          = os.Getenv("NODE_NAME")
+	wledSegment       = os.Getenv(nodeName)
+	wledUrl           = os.Getenv("WLED_URL")
+	informerNamespace = os.Getenv("NAMESPACE")
 )
 
 func main() {
@@ -64,6 +65,10 @@ func main() {
 
 	factory := dynamicinformer.NewFilteredDynamicSharedInformerFactory(clusterClient, time.Minute, corev1.NamespaceAll, nil)
 
+	if informerNamespace != "" {
+		factory = dynamicinformer.NewFilteredDynamicSharedInformerFactory(clusterClient, time.Minute, informerNamespace, nil)
+	}
+
 	informer := factory.ForResource(resource).Informer()
 
 	mux := &sync.RWMutex{}
@@ -82,8 +87,6 @@ func main() {
 			fmt.Println("ADDED POD ON NODE: " + nodeName)
 			fmt.Println("WOULD SEND TO", wledSegment)
 
-			wled.ControllWled(wledUrl)
-
 			// fmt.Println(obj)
 
 			// CONVERT OBJECT TO POD
@@ -98,6 +101,16 @@ func main() {
 			}
 
 			fmt.Println("POD", po.Name)
+
+			updatedStatus := wled.WledStatus{
+				Brightness: 100,
+				Segment:    5,
+				Color:      "[145,92,210],[12,32,0],[0,0,0]",
+				Fx:         2,
+			}
+
+			wled.ControllWled(wledUrl, updatedStatus)
+
 		},
 		UpdateFunc: func(oldObj, newObj interface{}) {
 			mux.RLock()

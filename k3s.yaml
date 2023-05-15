@@ -17,6 +17,7 @@ metadata:
   namespace: wri
 data:
   wledUrl: "tbd"
+  namespace: croco
   node11: "0"
   node13: "1"
   node14: "2"
