@@ -70,7 +70,7 @@ func main() {
 	// factory := dynamicinformer.NewFilteredDynamicSharedInformerFactory(clusterClient, time.Minute, corev1.NamespaceAll, nil)
 
 	if informerNamespace != "" {
-		factory = dynamicinformer.NewFilteredDynamicSharedInformerFactory(clusterClient, time.Minute, informerNamespace, nil)
+		factory = dynamicinformer.NewFilteredDynamicSharedInformerFactory(clusterClient, time.Minute, informerNamespace, listOpfunc)
 	}
 
 	informer := factory.ForResource(resource).Informer()
@@ -92,6 +92,7 @@ func main() {
 
 			fmt.Println("ADDED POD ON NODE: " + nodeName)
 			fmt.Println("LED SEGMENT", wledSegment)
+			fmt.Println("NAMESPACE", informerNamespace)
 
 			// fmt.Println(obj)
 
