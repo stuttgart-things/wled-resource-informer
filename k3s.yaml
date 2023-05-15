@@ -53,7 +53,7 @@ spec:
       serviceAccountName: wled-resource-informer
       containers:
       - name: wled-resource-informer
-        image: eu.gcr.io/stuttgart-things/wled-resource-informer:0.1.2
+        image: eu.gcr.io/stuttgart-things/wled-resource-informer:0.1.6
         envFrom:
           - configMapRef:
               name: node-segement-config
