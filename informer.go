@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strconv"
 	"sync"
 	"time"
 
@@ -27,7 +28,8 @@ import (
 var (
 	nodeName          = os.Getenv("NODE_NAME")
 	wledSegment       = os.Getenv(nodeName)
-	wledUrl           = os.Getenv("WLED_URL")
+	brightness        = os.Getenv("BRIGHTNESS")
+	wledUrl           = os.Getenv("WLEDURL")
 	informerNamespace = os.Getenv("NAMESPACE")
 )
 
@@ -103,8 +105,8 @@ func main() {
 			fmt.Println("POD", po.Name)
 
 			updatedStatus := wled.WledStatus{
-				Brightness: 100,
-				Segment:    5,
+				Brightness: convertStringToInt(brightness),
+				Segment:    convertStringToInt(wledSegment),
 				Color:      "[145,92,210],[12,32,0],[0,0,0]",
 				Fx:         2,
 			}
@@ -153,4 +155,14 @@ func main() {
 	}
 
 	<-ctx.Done()
+}
+
+func convertStringToInt(input string) (output int) {
+	output, err := strconv.Atoi(wledSegment)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return
+
 }

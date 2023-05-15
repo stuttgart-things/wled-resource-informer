@@ -16,7 +16,7 @@ metadata:
   name: node-segement-config
   namespace: wri
 data:
-  wledUrl: "tbd"
+  wledurl: "192.168.8.100"
   namespace: croco
   node11: "0"
   node13: "1"
@@ -54,7 +54,7 @@ spec:
       serviceAccountName: wled-resource-informer
       containers:
       - name: wled-resource-informer
-        image: eu.gcr.io/stuttgart-things/wled-resource-informer:0.1.6
+        image: eu.gcr.io/stuttgart-things/wled-resource-informer:0.1.7
         envFrom:
           - configMapRef:
               name: node-segement-config
