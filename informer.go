@@ -91,13 +91,12 @@ func main() {
 			}
 
 			fmt.Println("ADDED POD ON NODE: " + nodeName)
-			fmt.Println("WOULD SEND TO", wledSegment)
+			fmt.Println("LED SEGMENT", wledSegment)
 
 			// fmt.Println(obj)
 
 			// CONVERT OBJECT TO POD
-			createdUnstructuredObj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(obj)
-			fmt.Println(err)
+			createdUnstructuredObj, _ := runtime.DefaultUnstructuredConverter.ToUnstructured(obj)
 
 			po := new(corev1.Pod)
 
@@ -112,7 +111,7 @@ func main() {
 				Brightness: convertStringToInt(brightness),
 				Segment:    convertStringToInt(wledSegment),
 				Color:      "[145,92,210],[12,32,0],[0,0,0]",
-				Fx:         2,
+				Fx:         0,
 			}
 
 			wled.ControllWled(wledUrl, updatedStatus)

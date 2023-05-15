@@ -29,14 +29,9 @@ func ControllWled(wledUrl string, updatedStatus WledStatus) {
 	wledUrl = "http://" + wledUrl + "/json/state"
 	fmt.Println("WLED URL:", wledUrl)
 
-	// updatedStatus := WledStatus{
-	// 	Brightness: 100,
-	// 	Segment:    5,
-	// 	Color:      "[145,92,210],[12,32,0],[0,0,0]",
-	// 	Fx:         2,
-	// }
-
 	var jsonData = []byte(renderBodyData(updatedStatus))
+
+	fmt.Println(renderBodyData(updatedStatus))
 
 	request, error := http.NewRequest("POST", wledUrl, bytes.NewBuffer(jsonData))
 	if error != nil {
