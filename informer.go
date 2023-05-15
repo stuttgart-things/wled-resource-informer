@@ -7,7 +7,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"github/wled-resource-informer/wled"
 	"log"
 	"os"
 	"os/signal"
