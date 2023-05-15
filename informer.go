@@ -61,7 +61,7 @@ func main() {
 	resource := schema.GroupVersionResource{Group: "", Version: "v1", Resource: "pods"}
 
 	listOp := metav1.ListOptions{
-		FieldSelector: "spec.nodeName=" + nodeName + "\"",
+		FieldSelector: "spec.nodeName=" + nodeName,
 	}
 
 	listOpfunc := dynamicinformer.TweakListOptionsFunc(func(options *metav1.ListOptions) { *options = listOp })
@@ -81,7 +81,6 @@ func main() {
 	// START INFORMING
 
 	fmt.Println("INFORMING ON: " + nodeName)
-	fmt.Println("spec.nodeName=" + nodeName + "\"")
 
 	informer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
