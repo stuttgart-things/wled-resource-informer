@@ -37,7 +37,7 @@ tasks:
 
   build-image:
     desc: Build container image
-    deps: [build-server]
+    deps: [tag, build-server]
     cmds:
       - sudo nerdctl build --platform=arm64 --output type=image,name={{ .REGISTRY }}/{{ .REPOSITORY_NAME }}/{{ .PROJECT_NAME }}:{{ .MAJOR }}.{{ .MINOR }}.{{ .PATCH }},push=true .
 

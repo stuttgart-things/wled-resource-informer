@@ -16,6 +16,7 @@ metadata:
   name: node-segement-config
   namespace: wri
 data:
+  wledUrl: "tbd"
   node11: "0"
   node13: "1"
   node14: "2"
@@ -52,7 +53,7 @@ spec:
       serviceAccountName: wled-resource-informer
       containers:
       - name: wled-resource-informer
-        image: eu.gcr.io/stuttgart-things/wled-informer:0.1.2
+        image: eu.gcr.io/stuttgart-things/wled-resource-informer:0.1.2
         envFrom:
           - configMapRef:
               name: node-segement-config

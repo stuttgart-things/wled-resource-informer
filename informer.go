@@ -1,18 +1,20 @@
+/*
+Copyright © 2023 Patrick Hermann patrick.hermann@sva.de
+*/
+
 package main
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"github/wled-resource-informer/wled"
 	"log"
-	"math/rand"
-	"net/http"
 	"os"
 	"os/signal"
 	"sync"
 	"time"
 
+	wled "github.com/stuttgart-things/wled-resource-informer"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -23,12 +25,15 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-// Buckets represents buckets configuration
-type Segments struct {
-	Segements map[string]string `yaml:"segments,omitempty"`
-}
+var (
+	nodeName    = os.Getenv("NODE_NAME")
+	wledSegment = os.Getenv(nodeName)
+	wledUrl     = os.Getenv("WLED_URL")
+)
 
 func main() {
+
+	// KUBECONFIG HANDLING OUTSIDE/INSIDE CLUSTER
 	kubeConfig := os.Getenv("KUBECONFIG")
 
 	var clusterConfig *rest.Config
@@ -47,6 +52,8 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	// INFORMER CONFIG
+
 	resource := schema.GroupVersionResource{Group: "", Version: "v1", Resource: "pods"}
 
 	// listOp := metav1.ListOptions{
@@ -62,6 +69,9 @@ func main() {
 
 	mux := &sync.RWMutex{}
 	synced := false
+
+	// START INFORMING
+
 	informer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			mux.RLock()
@@ -70,14 +80,14 @@ func main() {
 				return
 			}
 
-			nodeName := os.Getenv("NODE_NAME")
-			wledSegment := os.Getenv(nodeName)
-
 			fmt.Println("ADDED POD ON NODE: " + nodeName)
 			fmt.Println("WOULD SEND TO", wledSegment)
 
-			fmt.Println(obj)
+			wled.ControllWled(wledUrl)
 
+			// fmt.Println(obj)
+
+			// CONVERT OBJECT TO POD
 			createdUnstructuredObj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(obj)
 			fmt.Println(err)
 
@@ -88,8 +98,7 @@ func main() {
 				log.Fatal(err)
 			}
 
-			// fmt.Println("NODE", po.Node)
-			// Handler logic
+			fmt.Println("POD", po.Name)
 		},
 		UpdateFunc: func(oldObj, newObj interface{}) {
 			mux.RLock()
@@ -101,8 +110,7 @@ func main() {
 			fmt.Println("UPDATED!")
 			fmt.Println("UPDATED POD ON NODE: " + os.Getenv("NODE_NAME"))
 
-			fmt.Println(RandBool)
-			// ControllLights()
+			// ControllWled()
 			// Handler logic
 		},
 		DeleteFunc: func(obj interface{}) {
@@ -133,35 +141,4 @@ func main() {
 	}
 
 	<-ctx.Done()
-}
-
-func ControllLights() {
-
-	httpposturl := "http://wled-87552c.local/json/state"
-	fmt.Println("HTTP JSON POST URL:", httpposturl)
-
-	var jsonData = []byte(`{
-	"on": "t",
-	"v": true
-		}`)
-
-	request, error := http.NewRequest("POST", httpposturl, bytes.NewBuffer(jsonData))
-	request.Header.Set("Content-Type", "application/json; charset=UTF-8")
-
-	client := &http.Client{}
-	response, error := client.Do(request)
-	if error != nil {
-		panic(error)
-	}
-	defer response.Body.Close()
-
-	fmt.Println("response Status:", response.Status)
-	fmt.Println("response Headers:", response.Header)
-	body, _ := ioutil.ReadAll(response.Body)
-	fmt.Println("response Body:", string(body))
-}
-
-func RandBool() bool {
-	rand.Seed(time.Now().UnixNano())
-	return rand.Intn(2) == 1
 }
