@@ -107,10 +107,11 @@ func main() {
 			fmt.Println("POD", po.Name)
 
 			updatedStatus := wled.WledStatus{
-				Brightness: convertStringToInt(brightness),
+				// Brightness: convertStringToInt(brightness),
+				Brightness: 150,
 				Segment:    convertStringToInt(wledSegment),
-				Color:      "[145,92,210],[12,32,0],[0,0,0]",
-				Fx:         0,
+				Color:      "[255,160,0],[2,32,234],[0,0,0]",
+				Fx:         2,
 			}
 
 			wled.ControllWled(wledUrl, updatedStatus)
@@ -136,8 +137,19 @@ func main() {
 				return
 			}
 
-			fmt.Println("DELETED!")
-			fmt.Println("DELETED POD ON NODE: " + os.Getenv("NODE_NAME"))
+			fmt.Println("DELETED POD ON NODE: " + nodeName)
+			fmt.Println("LED SEGMENT", wledSegment)
+			fmt.Println("NAMESPACE", informerNamespace)
+
+			updatedStatus := wled.WledStatus{
+				// Brightness: convertStringToInt(brightness),
+				Brightness: 150,
+				Segment:    convertStringToInt(wledSegment),
+				Color:      "[115,120,112],[0,0,0],[0,0,0]",
+				Fx:         0,
+			}
+
+			wled.ControllWled(wledUrl, updatedStatus)
 
 		},
 	})
